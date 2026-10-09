@@ -1,1 +1,0 @@
-int second_largest =arr [0];
