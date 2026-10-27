@@ -1,0 +1,136 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Camera Capture</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background: #f4f6f9;
+            margin: 0;
+            padding: 30px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px #00000020;
+        }
+
+        video, canvas, #capturedImage {
+            width: 100%;
+            max-width: 450px;
+            border-radius: 10px;
+            margin-top: 15px;
+        }
+
+        button {
+            padding: 12px 20px;
+            margin: 10px 5px;
+            border: none;
+            border-radius: 6px;
+            background: #2563eb;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background: #1d4ed8;
+        }
+
+        #capturedImage {
+            display: none;
+        }
+
+        #message {
+            color: #dc2626;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Camera Capture</h1>
+        <p>Access your camera and capture a photo.</p>
+
+        <video id="video" autoplay playsinline></video>
+
+        <br>
+
+        <button id="startBtn">Start Camera</button>
+        <button id="captureBtn">Capture Photo</button>
+        <button id="stopBtn">Stop Camera</button>
+
+        <h2>Captured Image</h2>
+
+        <img id="capturedImage" alt="Your captured photo">
+
+        <canvas id="canvas" hidden></canvas>
+
+        <p id="message"></p>
+    </div>
+
+    <script>
+        const video = document.getElementById("video");
+        const canvas = document.getElementById("canvas");
+        const capturedImage = document.getElementById("capturedImage");
+        const message = document.getElementById("message");
+
+        let cameraStream = null;
+
+        // Start camera
+        document.getElementById("startBtn").addEventListener("click", async () => {
+            try {
+                cameraStream = await navigator.mediaDevices.getUserMedia({
+                    video: true,
+                    audio: false
+                });
+
+                video.srcObject = cameraStream;
+                message.textContent = "Camera started successfully!";
+            } catch (error) {
+                message.textContent =
+                    "Unable to access camera. Please allow camera permission.";
+                console.error(error);
+            }
+        });
+
+        // Capture photo
+        document.getElementById("captureBtn").addEventListener("click", () => {
+            if (!cameraStream || video.readyState < 2) {
+                message.textContent = "Please start the camera first.";
+                return;
+            }
+
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+
+            const context = canvas.getContext("2d");
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            capturedImage.src = canvas.toDataURL("image/png");
+            capturedImage.style.display = "block";
+
+            message.textContent = "Photo captured successfully!";
+        });
+
+        // Stop camera
+        document.getElementById("stopBtn").addEventListener("click", () => {
+            if (cameraStream) {
+                cameraStream.getTracks().forEach(track => track.stop());
+                cameraStream = null;
+                video.srcObject = null;
+                message.textContent = "Camera stopped.";
+            }
+        });
+    </script>
+</body>
+</html>
