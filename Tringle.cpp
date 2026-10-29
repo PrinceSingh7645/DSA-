@@ -5,11 +5,11 @@ int main(){
      cout<<"enter the number of rows"<<endl;
      cin>>n;
 
-     for(int i = 1; i <= n; i++){
-        for(int j  = 1; j<=i; j++){
+      for(int i = 1; i <= n; i++){
+        for(int j = 1; j <= i; j++){
             cout<<" * ";
-
         }
-      cout<<endl;
-     }
+        cout<<endl;
+      }     
+      return 0;   
 }
